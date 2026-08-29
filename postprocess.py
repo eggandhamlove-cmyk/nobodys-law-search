@@ -4,15 +4,15 @@ import re
 p=Path('index.html')
 s=p.read_text(encoding='utf-8')
 
-QA_URL='https://app.notion.com/p/Nobody-s-Law-Q-A-3c4a36e22f8980ad8aadd30fbefa7920'
+QA_URL='qa.html'
 QA_IMAGE='582_20260823202440.png'
 qa_img=Path(QA_IMAGE)
 if qa_img.exists():
-    qa_html=(f'<div class="qa-wrap"><a class="qa-banner" href="{QA_URL}" target="_blank" rel="noopener">'
+    qa_html=(f'<div class="qa-wrap"><a class="qa-banner" href="{QA_URL}">'
              f'<img src="{QA_IMAGE}" alt="Nobody\'s Law Q&A"></a>'
              f'<div class="qa-caption">クリック/タップでお題箱に飛びます</div></div>')
 else:
-    qa_html=f'<blockquote class="qa-link"><strong><a href="{QA_URL}" target="_blank" rel="noopener">Q＆Aはこちら</a></strong></blockquote>'
+    qa_html=f'<blockquote class="qa-link"><strong><a href="{QA_URL}">Q＆Aはこちら</a></strong></blockquote>'
 
 s=re.sub(r'<blockquote(?: class="qa-link")?>\s*<strong>(?:<a[^>]*>)?Q＆Aはこちら(?:</a>)?</strong>\s*</blockquote>',qa_html,s,count=1)
 s=re.sub(r'(<nav class="toc"><b>目次</b><div class="toc-items"></div></nav>)\s*\1',r'\1',s,count=1)
