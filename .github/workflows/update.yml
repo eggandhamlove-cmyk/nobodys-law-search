@@ -6,8 +6,8 @@ on:
     paths:
       - "build.py"
       - "postprocess.py"
-      - "qa-banner.webp"
-      - "qa-banner.jpeg"
+      - "qa_build.py"
+      - "582_20260823202440.png"
       - ".github/workflows/update.yml"
   schedule:
     - cron: "17 * * * *"
@@ -31,19 +31,20 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Build site from Notion
+      - name: Build overview and Q&A from Notion
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_PAGE_ID: "3c5a36e22f8980faa373c5a3b63518d3"
         run: |
           python build.py
           python postprocess.py
+          python qa_build.py
 
       - name: Commit updated site
         run: |
           git config user.name "nobodys-law-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add index.html qa.html
           if git diff --cached --quiet; then
             echo "No changes"
           else
