@@ -5,9 +5,9 @@ p=Path('index.html')
 s=p.read_text(encoding='utf-8')
 
 QA_URL='https://app.notion.com/p/Nobody-s-Law-Q-A-3c4a36e22f8980ad8aadd30fbefa7920'
-QA_IMAGE='qa-banner.png'
+QA_IMAGE='qa-banner.jpeg'
 
-# Q&A: if qa-banner.png exists in the repository, use it as the clickable link.
+# Q&A: if the banner image exists in the repository, use it as the clickable link.
 # Otherwise keep the text link as a fallback.
 qa_img=Path(QA_IMAGE)
 if qa_img.exists():
@@ -32,7 +32,8 @@ s=re.sub(r'(<nav class="toc"><b>目次</b><div class="toc-items"></div></nav>)\s
 def toggles_from_markers(inner, labels):
     alt='|'.join(re.escape(x) for x in labels)
     marker=re.compile(r'<p>\s*(?:<strong>)?(' + alt + r')(?:</strong>)?\s*</p>', re.S)
-    found=list(marker.finditer(inner))
+    found=list(marker.finditer(inner)
+    )
     if not found:
         return inner, 0
     prefix=inner[:found[0].start()]
@@ -85,8 +86,7 @@ def area_repl(m):
 
 s=area_pat.sub(area_repl,s,count=1)
 
-# Keep the quoted subheading and the paragraph immediately below it in one indented block.
-# Example: | 制服\n          自由
+# Keep quoted subheading and the paragraph immediately below it in one indented block.
 s=re.sub(
     r'<blockquote>(.*?)</blockquote>\s*<p>(.*?)</p>',
     r'<div class="quote-group"><blockquote>\1</blockquote><p>\2</p></div>',
@@ -94,22 +94,16 @@ s=re.sub(
     flags=re.S,
 )
 
-# Preserve line breaks in the CS-required tag list so tags are shown top-to-bottom, not inline.
+# Preserve line breaks in the CS-required tag list so tags are shown top-to-bottom.
 def vertical_cs_tags(m):
     content=m.group(1)
     content=content.replace('\r\n','\n').replace('\r','\n')
     content=re.sub(r'\n+', '<br>', content)
     return '<p class="cs-tags">'+content+'</p>'
 
-s=re.sub(
-    r'<p>(︎✦︎<strong>CS必須</strong>.*?</p>)',
-    lambda m: vertical_cs_tags(re.match(r'(.*)</p>', m.group(1), re.S)),
-    s,
-    count=1,
-    flags=re.S,
-)
+cs_pat=re.compile(r'<p>(︎✦︎<strong>CS必須</strong>.*?)</p>', re.S)
+s=cs_pat.sub(lambda m: vertical_cs_tags(m), s, count=1)
 
-# Extra styling injected after the generated stylesheet.
 extra_css='''
 <style id="nbl-postprocess-style">
 .quote-group{margin:16px 0;padding-left:16px;border-left:4px solid #ff3f8e}
@@ -124,4 +118,4 @@ if 'id="nbl-postprocess-style"' not in s:
     s=s.replace('</head>',extra_css+'</head>',1)
 
 p.write_text(s,encoding='utf-8')
-print(f'Patched Q&A; character toggles={char_count}; area toggles={area_count}')
+print(f'Patched Q&A image={qa_img.exists()}; character toggles={char_count}; area toggles={area_count}')
