@@ -6,6 +6,8 @@ on:
     paths:
       - "build.py"
       - "postprocess.py"
+      - "qa-banner.webp"
+      - "qa-banner.jpeg"
       - ".github/workflows/update.yml"
   schedule:
     - cron: "17 * * * *"
