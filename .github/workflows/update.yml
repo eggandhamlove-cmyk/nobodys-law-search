@@ -1,6 +1,11 @@
 name: Update Nobody's Law
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "build.py"
+      - ".github/workflows/update.yml"
   schedule:
     - cron: "17 * * * *"
   workflow_dispatch:
