@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "build.py"
+      - "postprocess.py"
       - ".github/workflows/update.yml"
   schedule:
     - cron: "17 * * * *"
@@ -32,7 +33,9 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_PAGE_ID: "3c5a36e22f8980faa373c5a3b63518d3"
-        run: python build.py
+        run: |
+          python build.py
+          python postprocess.py
 
       - name: Commit updated site
         run: |
