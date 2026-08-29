@@ -5,7 +5,7 @@ p=Path('index.html')
 s=p.read_text(encoding='utf-8')
 
 QA_URL='https://app.notion.com/p/Nobody-s-Law-Q-A-3c4a36e22f8980ad8aadd30fbefa7920'
-QA_IMAGE='qa-banner.jpeg'
+QA_IMAGE='qa-banner.webp'
 qa_img=Path(QA_IMAGE)
 if qa_img.exists():
     qa_html=(f'<a class="qa-banner" href="{QA_URL}" target="_blank" rel="noopener">'
@@ -45,12 +45,11 @@ def vertical_cs_tags(m):
     content=m.group(1).replace('\r\n','\n').replace('\r','\n'); content=re.sub(r'\n+','<br>',content); return '<p class="cs-tags">'+content+'</p>'
 s=re.sub(r'<p>(︎✦︎<strong>CS必須</strong>.*?)</p>',vertical_cs_tags,s,count=1,flags=re.S)
 
-# Replace the style on every build, rather than leaving an older cached version in generated HTML.
 s=re.sub(r'<style id="nbl-postprocess-style">.*?</style>','',s,flags=re.S)
 extra_css='''<style id="nbl-postprocess-style">
 .quote-group{margin:16px 0;padding-left:16px;border-left:4px solid #ff3f8e}.quote-group blockquote{margin:0;padding:0;border:0}.quote-group p{margin:4px 0 0;padding:0}.cs-tags{line-height:1.9}
-.qa-banner{display:block;width:100%;max-width:760px;margin:18px 0;text-decoration:none;line-height:0;overflow:hidden;border-radius:8px}
-.qa-banner img{display:block!important;width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;min-height:0!important;object-fit:contain!important;object-position:center!important;margin:0!important;padding:0!important;border-radius:0!important}
+.qa-banner{display:block;width:100%;max-width:760px;margin:18px 0;text-decoration:none;line-height:0;border-radius:8px}
+.qa-banner img{display:block!important;width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain!important;margin:0!important;padding:0!important}
 </style>'''
 s=s.replace('</head>',extra_css+'</head>',1)
 p.write_text(s,encoding='utf-8')
