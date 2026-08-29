@@ -6,116 +6,52 @@ s=p.read_text(encoding='utf-8')
 
 QA_URL='https://app.notion.com/p/Nobody-s-Law-Q-A-3c4a36e22f8980ad8aadd30fbefa7920'
 QA_IMAGE='qa-banner.jpeg'
-
-# Q&A: if the banner image exists in the repository, use it as the clickable link.
-# Otherwise keep the text link as a fallback.
 qa_img=Path(QA_IMAGE)
 if qa_img.exists():
-    qa_html=(
-        f'<a class="qa-banner" href="{QA_URL}" target="_blank" rel="noopener">'
-        f'<img src="{QA_IMAGE}" alt="Nobody\'s Law Q&A"></a>'
-    )
+    qa_html=(f'<a class="qa-banner" href="{QA_URL}" target="_blank" rel="noopener">'
+             f'<img src="{QA_IMAGE}" alt="Nobody\'s Law Q&A"></a>')
 else:
     qa_html=f'<blockquote class="qa-link"><strong><a href="{QA_URL}" target="_blank" rel="noopener">Q＆Aはこちら</a></strong></blockquote>'
 
-s=re.sub(
-    r'<blockquote(?: class="qa-link")?>\s*<strong>(?:<a[^>]*>)?Q＆Aはこちら(?:</a>)?</strong>\s*</blockquote>',
-    qa_html,
-    s,
-    count=1,
-)
+s=re.sub(r'<blockquote(?: class="qa-link")?>\s*<strong>(?:<a[^>]*>)?Q＆Aはこちら(?:</a>)?</strong>\s*</blockquote>',qa_html,s,count=1)
+s=re.sub(r'(<nav class="toc"><b>目次</b><div class="toc-items"></div></nav>)\s*\1',r'\1',s,count=1)
 
-# Avoid duplicated TOCs when both a Notion TOC block and the visual marker are present.
-s=re.sub(r'(<nav class="toc"><b>目次</b><div class="toc-items"></div></nav>)\s*\1', r'\1', s, count=1)
-
-
-def toggles_from_markers(inner, labels):
-    alt='|'.join(re.escape(x) for x in labels)
-    marker=re.compile(r'<p>\s*(?:<strong>)?(' + alt + r')(?:</strong>)?\s*</p>', re.S)
-    found=list(marker.finditer(inner)
-    )
-    if not found:
-        return inner, 0
-    prefix=inner[:found[0].start()]
-    out=[prefix]
+def toggles_from_markers(inner,labels):
+    alt='|'.join(re.escape(x) for x in labels); marker=re.compile(r'<p>\s*(?:<strong>)?('+alt+r')(?:</strong>)?\s*</p>',re.S); found=list(marker.finditer(inner))
+    if not found:return inner,0
+    out=[inner[:found[0].start()]]
     for idx,m in enumerate(found):
-        label=m.group(1)
-        end=found[idx+1].start() if idx+1 < len(found) else len(inner)
-        content=inner[m.end():end]
-        content=re.sub(r'^\s*<hr>','',content,count=1)
-        out.append(
-            '<details class="toggle item-toggle">'
-            f'<summary><strong>{label}</strong></summary>'
-            f'<div class="toggle-body">{content}</div>'
-            '</details>'
-        )
-    return ''.join(out), len(found)
+        end=found[idx+1].start() if idx+1<len(found) else len(inner); content=re.sub(r'^\s*<hr>','',inner[m.end():end],count=1)
+        out.append('<details class="toggle item-toggle"><summary><strong>'+m.group(1)+'</strong></summary><div class="toggle-body">'+content+'</div></details>')
+    return ''.join(out),len(found)
 
-# Character creation: section heading stays visible; each role is its own toggle.
-char_pat=re.compile(r'<h3>キャラクター作成詳細</h3>(.*?)(?=<h3>エリア詳細</h3>)', re.S)
-char_count=0
-
+char_pat=re.compile(r'<h3>キャラクター作成詳細</h3>(.*?)(?=<h3>エリア詳細</h3>)',re.S); char_count=0
 def char_repl(m):
     global char_count
-    inner=re.sub(r'^\s*<hr>','',m.group(1),count=1)
-    rebuilt,n=toggles_from_markers(inner,[
-        '共通作成ルール','マフィア','警察','教会','看守','囚人'
-    ])
-    char_count=n
+    rebuilt,n=toggles_from_markers(re.sub(r'^\s*<hr>','',m.group(1),count=1),['共通作成ルール','マフィア','警察','教会','看守','囚人']); char_count=n
     return '<h3>キャラクター作成詳細</h3><hr>'+rebuilt
-
 s=char_pat.sub(char_repl,s,count=1)
 
-# Area details: section heading stays visible; each area is its own toggle.
-area_pat=re.compile(r'<h3>エリア詳細</h3>(.*?)(?=<h3>NPCファミリー</h3>)', re.S)
-area_count=0
-
+area_pat=re.compile(r'<h3>エリア詳細</h3>(.*?)(?=<h3>NPCファミリー</h3>)',re.S); area_count=0
 def area_repl(m):
     global area_count
-    inner=re.sub(r'^\s*<hr>','',m.group(1),count=1)
-    rebuilt,n=toggles_from_markers(inner,[
-        'Newvail -ニューヴェール-',
-        'Polcano -ポルカーノ-',
-        'Vesper -ヴェスパー-',
-        '桜月 -おうげつ-',
-        '鬼籠 -グイロン-',
-        'Zastoy -ザストイ-'
-    ])
-    area_count=n
+    rebuilt,n=toggles_from_markers(re.sub(r'^\s*<hr>','',m.group(1),count=1),['Newvail -ニューヴェール-','Polcano -ポルカーノ-','Vesper -ヴェスパー-','桜月 -おうげつ-','鬼籠 -グイロン-','Zastoy -ザストイ-']); area_count=n
     return '<h3>エリア詳細</h3><hr>'+rebuilt
-
 s=area_pat.sub(area_repl,s,count=1)
 
-# Keep quoted subheading and the paragraph immediately below it in one indented block.
-s=re.sub(
-    r'<blockquote>(.*?)</blockquote>\s*<p>(.*?)</p>',
-    r'<div class="quote-group"><blockquote>\1</blockquote><p>\2</p></div>',
-    s,
-    flags=re.S,
-)
+s=re.sub(r'<blockquote>(.*?)</blockquote>\s*<p>(.*?)</p>',r'<div class="quote-group"><blockquote>\1</blockquote><p>\2</p></div>',s,flags=re.S)
 
-# Preserve line breaks in the CS-required tag list so tags are shown top-to-bottom.
 def vertical_cs_tags(m):
-    content=m.group(1)
-    content=content.replace('\r\n','\n').replace('\r','\n')
-    content=re.sub(r'\n+', '<br>', content)
-    return '<p class="cs-tags">'+content+'</p>'
+    content=m.group(1).replace('\r\n','\n').replace('\r','\n'); content=re.sub(r'\n+','<br>',content); return '<p class="cs-tags">'+content+'</p>'
+s=re.sub(r'<p>(︎✦︎<strong>CS必須</strong>.*?)</p>',vertical_cs_tags,s,count=1,flags=re.S)
 
-cs_pat=re.compile(r'<p>(︎✦︎<strong>CS必須</strong>.*?)</p>', re.S)
-s=cs_pat.sub(lambda m: vertical_cs_tags(m), s, count=1)
-
-extra_css='''
-<style id="nbl-postprocess-style">
-.quote-group{margin:16px 0;padding-left:16px;border-left:4px solid #ff3f8e}
-.quote-group blockquote{margin:0;padding:0;border:0}
-.quote-group p{margin:4px 0 0;padding:0}
-.cs-tags{line-height:1.9}
-.qa-banner{display:block;margin:18px 0;text-decoration:none}
-.qa-banner img{display:block;width:100%;max-width:760px;height:auto;border-radius:8px}
-</style>
-'''
-if 'id="nbl-postprocess-style"' not in s:
-    s=s.replace('</head>',extra_css+'</head>',1)
-
+# Replace the style on every build, rather than leaving an older cached version in generated HTML.
+s=re.sub(r'<style id="nbl-postprocess-style">.*?</style>','',s,flags=re.S)
+extra_css='''<style id="nbl-postprocess-style">
+.quote-group{margin:16px 0;padding-left:16px;border-left:4px solid #ff3f8e}.quote-group blockquote{margin:0;padding:0;border:0}.quote-group p{margin:4px 0 0;padding:0}.cs-tags{line-height:1.9}
+.qa-banner{display:block;width:100%;max-width:760px;margin:18px 0;text-decoration:none;line-height:0;overflow:hidden;border-radius:8px}
+.qa-banner img{display:block!important;width:100%!important;max-width:none!important;height:auto!important;max-height:none!important;min-height:0!important;object-fit:contain!important;object-position:center!important;margin:0!important;padding:0!important;border-radius:0!important}
+</style>'''
+s=s.replace('</head>',extra_css+'</head>',1)
 p.write_text(s,encoding='utf-8')
 print(f'Patched Q&A image={qa_img.exists()}; character toggles={char_count}; area toggles={area_count}')
