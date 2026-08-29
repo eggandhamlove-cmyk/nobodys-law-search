@@ -8,8 +8,9 @@ QA_URL='https://app.notion.com/p/Nobody-s-Law-Q-A-3c4a36e22f8980ad8aadd30fbefa79
 QA_IMAGE='582_20260823202440.png'
 qa_img=Path(QA_IMAGE)
 if qa_img.exists():
-    qa_html=(f'<a class="qa-banner" href="{QA_URL}" target="_blank" rel="noopener">'
-             f'<img src="{QA_IMAGE}" alt="Nobody\'s Law Q&A"></a>')
+    qa_html=(f'<div class="qa-wrap"><a class="qa-banner" href="{QA_URL}" target="_blank" rel="noopener">'
+             f'<img src="{QA_IMAGE}" alt="Nobody\'s Law Q&A"></a>'
+             f'<div class="qa-caption">クリック/タップでお題箱に飛びます</div></div>')
 else:
     qa_html=f'<blockquote class="qa-link"><strong><a href="{QA_URL}" target="_blank" rel="noopener">Q＆Aはこちら</a></strong></blockquote>'
 
@@ -48,8 +49,7 @@ s=re.sub(r'<p>(︎✦︎<strong>CS必須</strong>.*?)</p>',vertical_cs_tags,s,co
 s=re.sub(r'<style id="nbl-postprocess-style">.*?</style>','',s,flags=re.S)
 extra_css='''<style id="nbl-postprocess-style">
 .quote-group{margin:16px 0;padding-left:16px;border-left:4px solid #ff3f8e}.quote-group blockquote{margin:0;padding:0;border:0}.quote-group p{margin:4px 0 0;padding:0}.cs-tags{line-height:1.9}
-.qa-banner{display:block;width:100%;max-width:760px;margin:18px 0;text-decoration:none;line-height:0;border-radius:8px;overflow:hidden}
-.qa-banner img{display:block!important;width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain!important;margin:0!important;padding:0!important}
+.qa-wrap{width:100%;max-width:760px;margin:18px 0}.qa-banner{display:block;width:100%;margin:0;text-decoration:none;line-height:0;border-radius:8px;overflow:hidden}.qa-banner img{display:block!important;width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain!important;margin:0!important;padding:0!important}.qa-caption{margin-top:7px;text-align:center;font-size:13px;color:#777;line-height:1.5}
 </style>'''
 s=s.replace('</head>',extra_css+'</head>',1)
 p.write_text(s,encoding='utf-8')
