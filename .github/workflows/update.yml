@@ -8,6 +8,7 @@ on:
       - "postprocess.py"
       - "qa_build.py"
       - "582_20260823202440.png"
+      - "582_20260823202844.png"
       - ".github/workflows/update.yml"
   schedule:
     - cron: "17 * * * *"
