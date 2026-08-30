@@ -42,6 +42,9 @@ try:
             f'<img src="{ODAIBAKO_IMAGE}" alt="お題箱はこちら" '
             'style="display:block;width:100%;height:auto;max-width:none;max-height:none;object-fit:contain;margin:0;padding:0;border:0">'
             '</a>'
+            '<div style="margin-top:7px;text-align:center;font-size:13px;color:#777;line-height:1.5">'
+            'クリック/タップでお題箱に飛びます'
+            '</div>'
             '</div>'
         )
         html, count = re.subn(
