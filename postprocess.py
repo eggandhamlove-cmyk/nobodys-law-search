@@ -4,6 +4,13 @@ import re
 p=Path('index.html')
 s=p.read_text(encoding='utf-8')
 
+# Restore the full introductory notice if Notion only exposes the first line.
+s=s.replace(
+    '<aside>概要まとめになります。</aside>',
+    '<aside>概要まとめになります。<br><br>順次更新予定です。<br>更新作業に伴い、<strong>予告なく一時的に公開を停止する</strong>場合がございます。<br>あらかじめご了承ください。</aside>',
+    1,
+)
+
 QA_URL='qa.html'
 QA_IMAGE='582_20260823202440.png'
 qa_img=Path(QA_IMAGE)
