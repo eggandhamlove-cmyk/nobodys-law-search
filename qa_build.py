@@ -59,21 +59,26 @@ try:
             internal_link,
             html,
         )
-        # Internal anchors should stay on the page instead of opening a new tab.
         html = re.sub(
             r'(<a href="#block-[^"]+")\s+target="_blank"\s+rel="noopener"',
             r'\1',
             html,
         )
 
-        # One Notion link currently loses its block fragment in the API and only
-        # returns the Q&A page URL. Its surrounding sentence clearly refers to
-        # the existing "人外のキャラクター" answer, so restore that target.
+        # One Notion link currently loses its block fragment in the API.
         html = re.sub(
             r'(一部機械のキャラクターを作成する場合は、)<a href="https://app\.notion\.com/p/Nobody-s-Law-Q-A-3c4a36e22f8980ad8aadd30fbefa7920"[^>]*>(<strong>こちら</strong>)</a>',
             r'\1<a href="#block-3c4a36e22f8980798c02c0aac01a7c2d">\2</a>',
             html,
             count=1,
+        )
+
+        # build.py centers internal-link targets. For cross-references this makes
+        # the destination feel too low on screen. Move the target to a Notion-like
+        # reading position near the upper part of the viewport instead.
+        html = html.replace(
+            "target.scrollIntoView({behavior:'smooth',block:'center'});history.replaceState",
+            "target.scrollIntoView({behavior:'smooth',block:'start'});window.setTimeout(()=>window.scrollBy({top:-105,left:0,behavior:'smooth'}),180);history.replaceState",
         )
 
         odaibako = (
@@ -96,7 +101,7 @@ try:
         )
         Path("qa.html").write_text(html, encoding="utf-8")
         print(f"Patched Odaibako image={bool(count)}")
-        print("Fixed internal Q&A cross-links")
+        print("Fixed internal Q&A cross-links and target positioning")
         print("Built searchable Q&A page -> qa.html")
 finally:
     if backup is None:
