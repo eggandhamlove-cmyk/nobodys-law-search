@@ -10,7 +10,7 @@ qa_img=Path(QA_IMAGE)
 if qa_img.exists():
     qa_html=(f'<div class="qa-wrap"><a class="qa-banner" href="{QA_URL}">'
              f'<img src="{QA_IMAGE}" alt="Nobody\'s Law Q&A"></a>'
-             f'<div class="qa-caption">クリック/タップでお題箱に飛びます</div></div>')
+             f'<div class="qa-caption">画像をクリック/タップでQ＆Aとお題箱に飛びます</div></div>')
 else:
     qa_html=f'<blockquote class="qa-link"><strong><a href="{QA_URL}">Q＆Aはこちら</a></strong></blockquote>'
 
