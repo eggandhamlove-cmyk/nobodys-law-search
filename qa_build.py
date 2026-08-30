@@ -22,17 +22,21 @@ try:
     try:
         subprocess.run(["python", "build.py"], check=True, env=env)
     except subprocess.CalledProcessError:
-        # Keep the scheduled workflow alive if the Q&A Notion page is moved,
-        # deleted, or no longer shared with the integration. The existing
-        # qa.html (if any) is left untouched until a valid page ID is supplied.
         print(
             "WARNING: Q&A page could not be fetched from Notion; "
             "keeping the existing qa.html unchanged."
         )
     else:
         html = index.read_text(encoding="utf-8")
+        # Search is already visible in the page UI, so remove redundant guidance notices.
+        html = re.sub(
+            r'<aside>\s*ctrl/cmd\+F でキーワード検索ができます。ご活用ください。(?:<br>\s*)*(?:アプリ版/スマートフォンでは検索機能を使用できませんので、ご注意ください。)?\s*</aside>',
+            '',
+            html,
+            count=1,
+        )
         html = html.replace(
-            '<aside>ctrl/cmd+F でキーワード検索ができます。ご活用ください。</aside>',
+            '<aside>アプリ版/スマートフォンでは検索機能を使用できませんので、ご注意ください。</aside>',
             '',
         )
         odaibako = (
