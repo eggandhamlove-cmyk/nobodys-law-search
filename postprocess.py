@@ -6,20 +6,28 @@ s = p.read_text(encoding='utf-8')
 
 # Social preview for the public overview page (X / Open Graph).
 SOCIAL_URL = 'https://nobodyslaw.github.io/nobodys-law-search/'
-SOCIAL_IMAGE = SOCIAL_URL + 'IMG_1376.png'
+# Version query helps social crawlers request a fresh copy after the image was added.
+SOCIAL_IMAGE = SOCIAL_URL + 'IMG_1376.png?v=3'
 SOCIAL_META = f'''<meta name="description" content="Nobody's Law 企画概要・世界観まとめ">
+<link rel="canonical" href="{SOCIAL_URL}">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Nobody's Law">
 <meta property="og:title" content="Nobody's Law">
 <meta property="og:description" content="Nobody's Law 企画概要・世界観まとめ">
 <meta property="og:url" content="{SOCIAL_URL}">
 <meta property="og:image" content="{SOCIAL_IMAGE}">
+<meta property="og:image:secure_url" content="{SOCIAL_IMAGE}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="Nobody's Law">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Nobody's Law">
 <meta name="twitter:description" content="Nobody's Law 企画概要・世界観まとめ">
 <meta name="twitter:image" content="{SOCIAL_IMAGE}">
+<meta name="twitter:image:alt" content="Nobody's Law">
 '''
 # Remove our metadata first if postprocess is ever run more than once.
-s = re.sub(r'<meta name="description" content="Nobody\'s Law 企画概要・世界観まとめ">.*?<meta name="twitter:image"[^>]*>\s*', '', s, count=1, flags=re.S)
+s = re.sub(r'<meta name="description" content="Nobody\'s Law 企画概要・世界観まとめ">.*?<meta name="twitter:image(?::alt)?"[^>]*>\s*', '', s, count=1, flags=re.S)
+s = re.sub(r'<link rel="canonical" href="https://nobodyslaw\.github\.io/nobodys-law-search/">\s*', '', s, count=1)
 s = s.replace('</head>', SOCIAL_META + '</head>', 1)
 
 # Restore the full introductory notice if Notion exposes the second part as a child paragraph.
