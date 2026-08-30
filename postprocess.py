@@ -48,6 +48,7 @@ def area_repl(m):
     return '<h3>エリア詳細</h3><hr>'+rebuilt
 s=area_pat.sub(area_repl,s,count=1)
 
+# Keep the pink quote line on the quoted heading only; following text is normal body text.
 s=re.sub(r'<blockquote>(.*?)</blockquote>\s*<p>(.*?)</p>',r'<div class="quote-group"><blockquote>\1</blockquote><p>\2</p></div>',s,flags=re.S)
 
 def vertical_cs_tags(m):
@@ -58,7 +59,7 @@ s=re.sub(r'<style id="nbl-postprocess-style">.*?</style>','',s,flags=re.S)
 extra_css='''<style id="nbl-postprocess-style">
 /* Notion-like text rhythm */
 main p,.toggle-body p{margin:0 0 14px;line-height:1.75;white-space:pre-line}main li,.toggle-body li{white-space:pre-line}main p+p,.toggle-body p+p{margin-top:8px}main h2{margin-top:2.1em;margin-bottom:.75em}main h3{margin-top:1.8em;margin-bottom:.65em}main hr{margin:22px 0}.toggle-body{padding-top:12px;padding-bottom:8px}.toggle-body ul,.toggle-body ol{margin-top:8px;margin-bottom:14px}.toggle-body li{margin:6px 0;line-height:1.7}
-.quote-group{margin:18px 0 22px;padding-left:16px;border-left:4px solid #ff3f8e}.quote-group blockquote{margin:0;padding:0;border:0;white-space:pre-line}.quote-group p{margin:8px 0 0;padding:0;line-height:1.75;white-space:pre-line}.cs-tags{line-height:1.9;margin-top:8px!important;margin-bottom:18px!important;white-space:normal!important}
+.quote-group{margin:18px 0 22px;padding-left:0;border-left:0}.quote-group blockquote{margin:0;padding:0 0 0 16px;border-left:4px solid #ff3f8e;white-space:pre-line}.quote-group p{margin:8px 0 0;padding:0;line-height:1.75;white-space:pre-line}.cs-tags{line-height:1.9;margin-top:8px!important;margin-bottom:18px!important;white-space:normal!important}
 .qa-section{width:100%;max-width:760px;margin:18px 0 24px}.qa-section .qa-link{margin-left:0;margin-right:0}.qa-wrap{width:100%;max-width:760px;margin:18px 0 24px}.qa-banner{display:block;width:100%;margin:0;text-decoration:none;line-height:0;border-radius:8px;overflow:hidden}.qa-banner img{display:block!important;width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain!important;margin:0!important;padding:0!important}.qa-caption{margin-top:7px;text-align:center;font-size:13px;color:#777;line-height:1.5}
 </style>'''
 s=s.replace('</head>',extra_css+'</head>',1)
