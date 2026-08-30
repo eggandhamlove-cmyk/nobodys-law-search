@@ -36,11 +36,13 @@ try:
             '',
         )
         odaibako = (
+            '<div style="width:100%;max-width:760px;margin:18px 0 24px">'
             f'<a href="{ODAIBAKO_URL}" target="_blank" rel="noopener" '
-            'style="display:block;margin:18px 0 22px">'
+            'style="display:block;width:100%;margin:0;text-decoration:none;line-height:0;border-radius:8px;overflow:hidden">'
             f'<img src="{ODAIBAKO_IMAGE}" alt="お題箱はこちら" '
-            'style="display:block;width:100%;height:auto;border:0">'
+            'style="display:block;width:100%;height:auto;max-width:none;max-height:none;object-fit:contain;margin:0;padding:0;border:0">'
             '</a>'
+            '</div>'
         )
         html, count = re.subn(
             r'<blockquote>\s*<strong>お題箱はこちら</strong>\s*</blockquote>',
