@@ -27,6 +27,22 @@ try:
     else:
         html = index.read_text(encoding="utf-8")
 
+        # Social preview for the public Q&A page (X / Open Graph).
+        social_url = "https://nobodyslaw.github.io/nobodys-law-search/qa.html"
+        social_image = "https://nobodyslaw.github.io/nobodys-law-search/582_20260823202440.png"
+        social_meta = f'''<meta name="description" content="Nobody's Law Q＆A">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nobody's Law Q＆A">
+<meta property="og:description" content="Nobody's Law Q＆A">
+<meta property="og:url" content="{social_url}">
+<meta property="og:image" content="{social_image}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nobody's Law Q＆A">
+<meta name="twitter:description" content="Nobody's Law Q＆A">
+<meta name="twitter:image" content="{social_image}">
+'''
+        html = html.replace('</head>', social_meta + '</head>', 1)
+
         # Remove the search-guidance callout.
         html = re.sub(
             r'<aside[^>]*>\s*ctrl/cmd\+F でキーワード検索ができます。ご活用ください。.*?アプリ版/スマートフォンでは検索機能を使用できませんので、ご注意ください。\s*</(?:p>)?\s*</aside>',
