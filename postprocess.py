@@ -4,6 +4,24 @@ import re
 p = Path('index.html')
 s = p.read_text(encoding='utf-8')
 
+# Social preview for the public overview page (X / Open Graph).
+SOCIAL_URL = 'https://nobodyslaw.github.io/nobodys-law-search/'
+SOCIAL_IMAGE = SOCIAL_URL + 'IMG_1376.png'
+SOCIAL_META = f'''<meta name="description" content="Nobody's Law 企画概要・世界観まとめ">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nobody's Law">
+<meta property="og:description" content="Nobody's Law 企画概要・世界観まとめ">
+<meta property="og:url" content="{SOCIAL_URL}">
+<meta property="og:image" content="{SOCIAL_IMAGE}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nobody's Law">
+<meta name="twitter:description" content="Nobody's Law 企画概要・世界観まとめ">
+<meta name="twitter:image" content="{SOCIAL_IMAGE}">
+'''
+# Remove our metadata first if postprocess is ever run more than once.
+s = re.sub(r'<meta name="description" content="Nobody\'s Law 企画概要・世界観まとめ">.*?<meta name="twitter:image"[^>]*>\s*', '', s, count=1, flags=re.S)
+s = s.replace('</head>', SOCIAL_META + '</head>', 1)
+
 # Restore the full introductory notice if Notion exposes the second part as a child paragraph.
 s = re.sub(
     r'<aside([^>]*)>\s*概要まとめになります。(?:\s*<p[^>]*>.*?</p>)?\s*</aside>',
