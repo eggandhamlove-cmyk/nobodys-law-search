@@ -21,9 +21,7 @@ def kids(i):
 
 def notion_page_url(page_id): return 'https://www.notion.so/'+page_id.replace('-','')
 
-NOTION_COLORS={
-'default':None,'gray':'#787774','brown':'#9f6b53','orange':'#d9730d','yellow':'#cb912f','green':'#448361','blue':'#337ea9','purple':'#9065b0','pink':'#c14c8a','red':'#d44c47',
-'gray_background':'#f1f1ef','brown_background':'#f4eeee','orange_background':'#fbecdd','yellow_background':'#fbf3db','green_background':'#edf3ec','blue_background':'#e7f3f8','purple_background':'#f4f0f7','pink_background':'#f9f0f5','red_background':'#fdebec'}
+NOTION_COLORS={'default':None,'gray':'#787774','brown':'#9f6b53','orange':'#d9730d','yellow':'#cb912f','green':'#448361','blue':'#337ea9','purple':'#9065b0','pink':'#c14c8a','red':'#d44c47','gray_background':'#f1f1ef','brown_background':'#f4eeee','orange_background':'#fbecdd','yellow_background':'#fbf3db','green_background':'#edf3ec','blue_background':'#e7f3f8','purple_background':'#f4f0f7','pink_background':'#f9f0f5','red_background':'#fdebec'}
 
 def colorize(t,color):
     if not color or color=='default': return t
@@ -35,15 +33,13 @@ def colorize(t,color):
 def rt(xs):
     z=''
     for x in xs or []:
-        t=html.escape(x.get('plain_text','')).replace('\n','<br>')
-        a=x.get('annotations',{})
+        t=html.escape(x.get('plain_text','')).replace('\n','<br>'); a=x.get('annotations',{})
         if a.get('bold'): t=f'<strong>{t}</strong>'
         if a.get('italic'): t=f'<em>{t}</em>'
         if a.get('strikethrough'): t=f'<s>{t}</s>'
         if a.get('underline'): t=f'<u>{t}</u>'
         if a.get('code'): t=f'<code>{t}</code>'
-        t=colorize(t,a.get('color','default'))
-        href=x.get('href')
+        t=colorize(t,a.get('color','default')); href=x.get('href')
         if not href and x.get('type')=='mention':
             m=x.get('mention',{})
             if m.get('type')=='page' and m.get('page',{}).get('id'): href=notion_page_url(m['page']['id'])
@@ -98,7 +94,9 @@ def render(bs):
             u=d.get('url','');out.append(f'<p class="linkcard"><a href="{html.escape(u,quote=True)}" target="_blank" rel="noopener">{html.escape(u)}</a></p>')
         elif typ=='link_to_page':
             target=d.get('page_id') or d.get('database_id') or '';out.append(f'<p><a href="{notion_page_url(target)}" target="_blank" rel="noopener">Notionページを開く</a></p>')
-        elif typ=='callout':out.append(f'<aside>{rt(d.get("rich_text"))}</aside>')
+        elif typ=='callout':
+            sub=render(kids(b['id'])) if b.get('has_children') else ''
+            out.append(f'<aside>{rt(d.get("rich_text"))}{sub}</aside>')
         elif typ=='divider':out.append('<hr>')
         elif typ=='code':out.append(f'<pre><code>{html.escape("".join(x.get("plain_text","") for x in d.get("rich_text",[])))}</code></pre>')
         elif typ=='to_do':out.append(f'<label class="todo"><input type="checkbox" disabled{" checked" if d.get("checked") else ""}> {rt(d.get("rich_text"))}</label>')
