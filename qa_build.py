@@ -73,13 +73,19 @@ try:
             count=1,
         )
 
-        # build.py centers internal-link targets. For cross-references this makes
-        # the destination feel too low on screen. Move the target to a Notion-like
-        # reading position near the upper part of the viewport instead.
+        # Keep internal targets near the top with one smooth movement.
+        # Open containing toggles first, wait for layout to settle, then scroll once.
+        old_scroll = "target.scrollIntoView({behavior:'smooth',block:'start'});window.setTimeout(()=>window.scrollBy({top:-105,left:0,behavior:'smooth'}),180);history.replaceState"
+        new_scroll = "requestAnimationFrame(()=>requestAnimationFrame(()=>{target.scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'',a.getAttribute('href'))}));return"
+        html = html.replace(old_scroll, new_scroll)
         html = html.replace(
-            "target.scrollIntoView({behavior:'smooth',block:'center'});history.replaceState",
-            "target.scrollIntoView({behavior:'smooth',block:'start'});window.setTimeout(()=>window.scrollBy({top:-105,left:0,behavior:'smooth'}),180);history.replaceState",
+            "target.scrollIntoView({behavior:'smooth',block:'center'});history.replaceState(null,'',a.getAttribute('href'))",
+            "requestAnimationFrame(()=>requestAnimationFrame(()=>{target.scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'',a.getAttribute('href'))}));return",
         )
+
+        # CSS scroll offset gives Notion-like breathing room without a second JS scroll.
+        anchor_css = '<style id="qa-anchor-style">[id^="block-"]{scroll-margin-top:86px}</style>'
+        html = html.replace('</head>', anchor_css + '</head>', 1)
 
         odaibako = (
             '<div style="width:100%;max-width:760px;margin:18px 0 24px">'
@@ -101,7 +107,7 @@ try:
         )
         Path("qa.html").write_text(html, encoding="utf-8")
         print(f"Patched Odaibako image={bool(count)}")
-        print("Fixed internal Q&A cross-links and target positioning")
+        print("Fixed internal Q&A cross-links and smooth target positioning")
         print("Built searchable Q&A page -> qa.html")
 finally:
     if backup is None:
