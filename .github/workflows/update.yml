@@ -6,7 +6,9 @@ on:
     paths:
       - "build.py"
       - "postprocess.py"
+      - "fix_social.py"
       - "qa_build.py"
+      - "IMG_1376_x.png"
       - "582_20260823202440.png"
       - "582_20260823202844.png"
       - ".github/workflows/update.yml"
@@ -39,6 +41,7 @@ jobs:
         run: |
           python build.py
           python postprocess.py
+          python fix_social.py
           python qa_build.py
 
       - name: Commit updated site
