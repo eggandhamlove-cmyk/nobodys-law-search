@@ -36,7 +36,7 @@ s = re.sub(
     flags=re.S,
 )
 
-# Notion currently contains two TOC blocks. Keep only the first one.
+# Keep exactly one TOC even if Notion contains duplicate TOC blocks.
 toc_pattern = re.compile(r'<nav[^>]*class="toc"[^>]*><b>目次</b><div class="toc-items">.*?</div></nav>', re.S)
 tocs = list(toc_pattern.finditer(s))
 if len(tocs) > 1:
@@ -136,6 +136,35 @@ main p,.toggle-body p{margin:0 0 14px;line-height:1.75;white-space:pre-line}main
 .toc .lv4{padding-left:36px;font-size:.94em;color:#666}
 </style>'''
 s = s.replace('</head>', extra_css + '</head>', 1)
+
+# build.py fills the TOC with h2/h3 items at page load. Rebuild it afterwards so
+# overview item toggles are included as Notion-like indented subheadings as well.
+toc_script = '''<script id="nbl-overview-toc-fix">
+window.addEventListener('DOMContentLoaded',()=>{
+  const toc=document.querySelector('.toc .toc-items');
+  if(!toc)return;
+  toc.innerHTML='';
+  const main=document.querySelector('main');
+  const items=[...main.querySelectorAll('h2,h3,.heading-toggle .h2,.heading-toggle .h3,.item-toggle>summary')];
+  let seq=0;
+  items.forEach(el=>{
+    const isItem=el.matches('.item-toggle>summary');
+    const target=isItem?el.parentElement:(el.closest('details')||el);
+    if(!target.id)target.id='overview-toc-'+seq;
+    seq++;
+    const a=document.createElement('a');
+    a.href='#'+target.id;
+    a.textContent=el.textContent.trim();
+    a.className=isItem?'lv4':(el.matches('h3,.h3')?'lv3':'lv2');
+    a.addEventListener('click',()=>{
+      for(let d=target.closest('details');d;d=d.parentElement.closest('details'))d.open=true;
+      if(target.matches('details'))target.open=true;
+    });
+    toc.appendChild(a);
+  });
+});
+</script>'''
+s = s.replace('</body>', toc_script + '</body>', 1)
 
 p.write_text(s, encoding='utf-8')
 print(f'Patched Q&A image={qa_img.exists()}; character toggles={char_count}; area toggles={area_count}')
