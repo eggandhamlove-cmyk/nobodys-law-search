@@ -27,21 +27,53 @@ try:
     else:
         html = index.read_text(encoding="utf-8")
 
-        # Remove the whole search-guidance callout regardless of whether the
-        # second line is rendered as a paragraph, line break, or plain text.
+        # Remove the search-guidance callout.
         html = re.sub(
-            r'<aside>\s*ctrl/cmd\+F でキーワード検索ができます。ご活用ください。.*?アプリ版/スマートフォンでは検索機能を使用できませんので、ご注意ください。\s*</(?:p>)?\s*</aside>',
+            r'<aside[^>]*>\s*ctrl/cmd\+F でキーワード検索ができます。ご活用ください。.*?アプリ版/スマートフォンでは検索機能を使用できませんので、ご注意ください。\s*</(?:p>)?\s*</aside>',
             '',
             html,
             count=1,
             flags=re.S,
         )
         html = re.sub(
-            r'<aside>\s*ctrl/cmd\+F でキーワード検索ができます。ご活用ください。\s*</aside>',
+            r'<aside[^>]*>\s*ctrl/cmd\+F でキーワード検索ができます。ご活用ください。\s*</aside>',
             '',
             html,
             count=1,
             flags=re.S,
+        )
+
+        # Convert Notion links that point to another block on this same Q&A page
+        # into local HTML anchors. Notion emits these as /p/<page>#<block-id>.
+        def internal_link(m):
+            block_id = m.group(1).replace('-', '')
+            return f'href="#block-{block_id}"'
+
+        html = re.sub(
+            r'href="(?:https://(?:www\.)?notion\.so)?/p/[^"]*#([0-9a-fA-F-]{32,36})"',
+            internal_link,
+            html,
+        )
+        html = re.sub(
+            r'href="https://app\.notion\.com/p/[^"]*#([0-9a-fA-F-]{32,36})"',
+            internal_link,
+            html,
+        )
+        # Internal anchors should stay on the page instead of opening a new tab.
+        html = re.sub(
+            r'(<a href="#block-[^"]+")\s+target="_blank"\s+rel="noopener"',
+            r'\1',
+            html,
+        )
+
+        # One Notion link currently loses its block fragment in the API and only
+        # returns the Q&A page URL. Its surrounding sentence clearly refers to
+        # the existing "人外のキャラクター" answer, so restore that target.
+        html = re.sub(
+            r'(一部機械のキャラクターを作成する場合は、)<a href="https://app\.notion\.com/p/Nobody-s-Law-Q-A-3c4a36e22f8980ad8aadd30fbefa7920"[^>]*>(<strong>こちら</strong>)</a>',
+            r'\1<a href="#block-3c4a36e22f8980798c02c0aac01a7c2d">\2</a>',
+            html,
+            count=1,
         )
 
         odaibako = (
@@ -57,13 +89,14 @@ try:
             '</div>'
         )
         html, count = re.subn(
-            r'<blockquote>\s*<strong>お題箱はこちら</strong>\s*</blockquote>',
+            r'<blockquote[^>]*>\s*<strong>お題箱はこちら</strong>\s*</blockquote>',
             odaibako,
             html,
             count=1,
         )
         Path("qa.html").write_text(html, encoding="utf-8")
         print(f"Patched Odaibako image={bool(count)}")
+        print("Fixed internal Q&A cross-links")
         print("Built searchable Q&A page -> qa.html")
 finally:
     if backup is None:
