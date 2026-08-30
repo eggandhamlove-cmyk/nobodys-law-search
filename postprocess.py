@@ -6,8 +6,8 @@ s = p.read_text(encoding='utf-8')
 
 # Social preview for the public overview page (X / Open Graph).
 SOCIAL_URL = 'https://nobodyslaw.github.io/nobodys-law-search/'
-# Version query helps social crawlers request a fresh copy after the image was added.
-SOCIAL_IMAGE = SOCIAL_URL + 'IMG_1376.png?v=3'
+# Use a different public image URL so X treats the preview image as a fresh resource.
+SOCIAL_IMAGE = 'https://raw.githubusercontent.com/nobodyslaw/nobodys-law-search/main/IMG_1376.png'
 SOCIAL_META = f'''<meta name="description" content="Nobody's Law 企画概要・世界観まとめ">
 <link rel="canonical" href="{SOCIAL_URL}">
 <meta property="og:type" content="website">
@@ -32,7 +32,7 @@ s = s.replace('</head>', SOCIAL_META + '</head>', 1)
 
 # Restore the full introductory notice if Notion exposes the second part as a child paragraph.
 s = re.sub(
-    r'<aside([^>]*)>\s*概要まとめになります。(?:\s*<p[^>]*>.*?</p>)?\s*</aside>',
+    r'<aside([^>]*)>\s*概要まとめになります.(?:\s*<p[^>]*>.*?</p>)?\s*</aside>',
     r'<aside\1>概要まとめになります。<br><br>順次更新予定です。<br>更新作業に伴い、<strong>予告なく一時的に公開を停止する</strong>場合がございます。<br>あらかじめご了承ください。</aside>',
     s,
     count=1,
