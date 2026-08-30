@@ -6,8 +6,7 @@ s = p.read_text(encoding='utf-8')
 
 # Social preview for the public overview page (X / Open Graph).
 SOCIAL_URL = 'https://nobodyslaw.github.io/nobodys-law-search/'
-# Use a different public image URL so X treats the preview image as a fresh resource.
-SOCIAL_IMAGE = 'https://raw.githubusercontent.com/nobodyslaw/nobodys-law-search/main/IMG_1376.png'
+SOCIAL_IMAGE = SOCIAL_URL + 'IMG_1376_x.png'
 SOCIAL_META = f'''<meta name="description" content="Nobody's Law 企画概要・世界観まとめ">
 <link rel="canonical" href="{SOCIAL_URL}">
 <meta property="og:type" content="website">
@@ -18,6 +17,8 @@ SOCIAL_META = f'''<meta name="description" content="Nobody's Law 企画概要・
 <meta property="og:image" content="{SOCIAL_IMAGE}">
 <meta property="og:image:secure_url" content="{SOCIAL_IMAGE}">
 <meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="676">
 <meta property="og:image:alt" content="Nobody's Law">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Nobody's Law">
