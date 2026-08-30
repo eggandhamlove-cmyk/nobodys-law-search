@@ -10,8 +10,6 @@ QA_PAGE_ID = os.environ.get(
 ODAIBAKO_URL = "https://odaibako.net/u/Nobodys_Law"
 ODAIBAKO_IMAGE = "582_20260823202844.png"
 
-# build.py always writes index.html, so keep the public overview page safe,
-# build the Q&A into that temporary path, then restore index.html.
 index = Path("index.html")
 backup = index.read_bytes() if index.exists() else None
 
@@ -28,17 +26,24 @@ try:
         )
     else:
         html = index.read_text(encoding="utf-8")
-        # Search is already visible in the page UI, so remove redundant guidance notices.
+
+        # Remove the whole search-guidance callout regardless of whether the
+        # second line is rendered as a paragraph, line break, or plain text.
         html = re.sub(
-            r'<aside>\s*ctrl/cmd\+F でキーワード検索ができます。ご活用ください。(?:<br>\s*)*(?:アプリ版/スマートフォンでは検索機能を使用できませんので、ご注意ください。)?\s*</aside>',
+            r'<aside>\s*ctrl/cmd\+F でキーワード検索ができます。ご活用ください。.*?アプリ版/スマートフォンでは検索機能を使用できませんので、ご注意ください。\s*</(?:p>)?\s*</aside>',
             '',
             html,
             count=1,
+            flags=re.S,
         )
-        html = html.replace(
-            '<aside>アプリ版/スマートフォンでは検索機能を使用できませんので、ご注意ください。</aside>',
+        html = re.sub(
+            r'<aside>\s*ctrl/cmd\+F でキーワード検索ができます。ご活用ください。\s*</aside>',
             '',
+            html,
+            count=1,
+            flags=re.S,
         )
+
         odaibako = (
             '<div style="width:100%;max-width:760px;margin:18px 0 24px">'
             f'<a href="{ODAIBAKO_URL}" target="_blank" rel="noopener" '
