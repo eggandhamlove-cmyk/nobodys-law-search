@@ -15,7 +15,8 @@ QA_URL='qa.html'
 QA_IMAGE='582_20260823202440.png'
 qa_img=Path(QA_IMAGE)
 if qa_img.exists():
-    qa_html=(f'<div class="qa-wrap"><a class="qa-banner" href="{QA_URL}">'
+    qa_html=(f'<blockquote class="qa-link"><strong>Q＆Aはこちら</strong></blockquote>'
+             f'<div class="qa-wrap"><a class="qa-banner" href="{QA_URL}">'
              f'<img src="{QA_IMAGE}" alt="Nobody\'s Law Q&A"></a>'
              f'<div class="qa-caption">画像をクリック/タップでQ＆Aとお題箱に飛びます</div></div>')
 else:
