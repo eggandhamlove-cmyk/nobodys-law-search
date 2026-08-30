@@ -15,10 +15,10 @@ QA_URL='qa.html'
 QA_IMAGE='582_20260823202440.png'
 qa_img=Path(QA_IMAGE)
 if qa_img.exists():
-    qa_html=(f'<blockquote class="qa-link"><strong>Q＆Aはこちら</strong></blockquote>'
+    qa_html=(f'<div class="qa-section"><blockquote class="qa-link"><strong>Q＆Aはこちら</strong></blockquote>'
              f'<div class="qa-wrap"><a class="qa-banner" href="{QA_URL}">'
              f'<img src="{QA_IMAGE}" alt="Nobody\'s Law Q&A"></a>'
-             f'<div class="qa-caption">画像をクリック/タップでQ＆Aとお題箱に飛びます</div></div>')
+             f'<div class="qa-caption">画像をクリック/タップでQ＆Aとお題箱に飛びます</div></div></div>')
 else:
     qa_html=f'<blockquote class="qa-link"><strong><a href="{QA_URL}">Q＆Aはこちら</a></strong></blockquote>'
 
@@ -59,7 +59,7 @@ extra_css='''<style id="nbl-postprocess-style">
 /* Notion-like text rhythm */
 main p,.toggle-body p{margin:0 0 14px;line-height:1.75;white-space:pre-line}main li,.toggle-body li{white-space:pre-line}main p+p,.toggle-body p+p{margin-top:8px}main h2{margin-top:2.1em;margin-bottom:.75em}main h3{margin-top:1.8em;margin-bottom:.65em}main hr{margin:22px 0}.toggle-body{padding-top:12px;padding-bottom:8px}.toggle-body ul,.toggle-body ol{margin-top:8px;margin-bottom:14px}.toggle-body li{margin:6px 0;line-height:1.7}
 .quote-group{margin:18px 0 22px;padding-left:16px;border-left:4px solid #ff3f8e}.quote-group blockquote{margin:0;padding:0;border:0;white-space:pre-line}.quote-group p{margin:8px 0 0;padding:0;line-height:1.75;white-space:pre-line}.cs-tags{line-height:1.9;margin-top:8px!important;margin-bottom:18px!important;white-space:normal!important}
-.qa-wrap{width:100%;max-width:760px;margin:18px 0 24px}.qa-banner{display:block;width:100%;margin:0;text-decoration:none;line-height:0;border-radius:8px;overflow:hidden}.qa-banner img{display:block!important;width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain!important;margin:0!important;padding:0!important}.qa-caption{margin-top:7px;text-align:center;font-size:13px;color:#777;line-height:1.5}
+.qa-section{width:100%;max-width:760px;margin:18px 0 24px}.qa-section .qa-link{margin-left:0;margin-right:0}.qa-wrap{width:100%;max-width:760px;margin:18px 0 24px}.qa-banner{display:block;width:100%;margin:0;text-decoration:none;line-height:0;border-radius:8px;overflow:hidden}.qa-banner img{display:block!important;width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain!important;margin:0!important;padding:0!important}.qa-caption{margin-top:7px;text-align:center;font-size:13px;color:#777;line-height:1.5}
 </style>'''
 s=s.replace('</head>',extra_css+'</head>',1)
 p.write_text(s,encoding='utf-8')
