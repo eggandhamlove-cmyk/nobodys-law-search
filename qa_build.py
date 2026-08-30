@@ -27,7 +27,12 @@ try:
             "keeping the existing qa.html unchanged."
         )
     else:
-        Path("qa.html").write_bytes(index.read_bytes())
+        html = index.read_text(encoding="utf-8")
+        html = html.replace(
+            '<aside>ctrl/cmd+F でキーワード検索ができます。ご活用ください。</aside>',
+            '',
+        )
+        Path("qa.html").write_text(html, encoding="utf-8")
         print("Built searchable Q&A page -> qa.html")
 finally:
     if backup is None:
