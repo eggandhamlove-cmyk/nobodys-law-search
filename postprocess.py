@@ -96,8 +96,9 @@ main p,.toggle-body p{margin:0 0 14px;line-height:1.75;white-space:pre-line}main
 .quote-group{margin:18px 0 22px;padding-left:0;border-left:0}.quote-group blockquote{margin:0;padding:0 0 0 16px;border-left:4px solid #ff3f8e;white-space:pre-line}.quote-group p{margin:8px 0 0;padding:0;line-height:1.75;white-space:pre-line}.cs-tags{line-height:1.9;margin-top:8px!important;margin-bottom:18px!important;white-space:normal!important}
 .qa-section{width:100%;max-width:760px;margin:18px 0 24px}.qa-section .qa-link{margin-left:0;margin-right:0}.qa-wrap{width:100%;max-width:760px;margin:18px 0 24px}.qa-banner{display:block;width:100%;margin:0;text-decoration:none;line-height:0;border-radius:8px;overflow:hidden}.qa-banner img{display:block!important;width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain!important;margin:0!important;padding:0!important}.qa-caption{margin-top:7px;text-align:center;font-size:13px;color:#777;line-height:1.5}
 .toc .lv4{padding-left:36px;font-size:.94em;color:#666}
-/* Mafia subsection headings: keep Family creation and Uniform aligned as siblings. */
 .item-toggle> .toggle-body h4,.item-toggle> .toggle-body .h4{margin-left:0!important;padding-left:0!important}.item-toggle> .toggle-body blockquote{margin-left:0}.item-toggle> .toggle-body>p,.item-toggle> .toggle-body>div{max-width:100%}
+/* Match the Mafia→Police gap to the other character toggles. */
+#block-3c5a36e22f8980539732eaf629069ca6{margin-bottom:0!important}#block-3c5a36e22f89806bb720f8be9c97322e{margin-top:0!important}
 </style>'''
 s = s.replace('</head>', extra_css + '</head>', 1)
 
